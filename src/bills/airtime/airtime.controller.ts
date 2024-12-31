@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   Req,
+  Query,
 } from '@nestjs/common';
 import { AirtimeService } from './airtime.service';
 import { UpdateAirtimeDto } from './dto/update-airtime.dto';
@@ -63,17 +64,29 @@ export class AirtimeController {
   }
 
   @Get('/providers/:iso')
-  async listProvidersByISO(@Param('iso') iso: string) {
+  async listProvidersByISO(
+    @Param('iso') iso: string,
+    @Query('suggestedAmountsMap') suggestedAmountsMap: boolean = true,
+    @Query('suggestedAmounts') suggestedAmounts: boolean = true,
+    @Query('includePin') includePin: boolean = true,
+    @Query('dataOnly') dataOnly: boolean = false,
+    @Query('includeData') includeData: boolean = false,
+  ) {
     const url = this.reloadly.getUrl(
       AudienceType.Airtime,
       reloadlyPath.countryOperators(iso),
     );
 
     const options = {
-      suggestedAmountsMap: true,
-      suggestedAmounts: true,
-      includePin: true,
+      suggestedAmountsMap,
+      suggestedAmounts,
+      includePin,
+      dataOnly,
+      includeData,
+      includeBundles: false,
     };
+
+    console.log(options);
 
     const queryParams = new URLSearchParams(
       options as unknown as Record<string, string>,
@@ -90,7 +103,34 @@ export class AirtimeController {
       },
     );
 
-    return response.filter((p) => p.denominationType === 'RANGE');
+    const operators = response.filter((p) =>
+      options.dataOnly
+        ? p.denominationType === 'FIXED'
+        : p.denominationType === 'RANGE',
+    );
+
+    return operators;
+    // if (options.dataOnly) {
+    //   const operatorMap = new Map();
+
+    //   operators.forEach((operator) => {
+    //     const name = operator.name.split(' ')[0]; // Get the first word of the operator name
+    //     if (!operatorMap.has(name)) {
+    //       operatorMap.set(name, { ...operator, plans: [] });
+    //     }
+    //     operatorMap.get(name).plans.push({
+    //       id: operator.id,
+    //       name: operator.name,
+    //       fixedAmounts: operator.fixedAmounts,
+    //       fixedAmountsDescriptions: operator.fixedAmountsDescriptions,
+    //     });
+    //   });
+
+    //   const newArr = Array.from(operatorMap.values());
+    //   return newArr;
+    // } else {
+    //   return operators;
+    // }
   }
 
   @Get(':id')
