@@ -48,6 +48,7 @@ export class AuthGuard implements CanActivate {
       request['user'] = payload;
       return true;
     } catch (error: any) {
+      console.log(error);
       throw new ForbiddenException(
         error.message || 'session expired! Please sign In',
       );
@@ -60,7 +61,7 @@ export class AuthGuard implements CanActivate {
     if (!cookies && !auth) {
       throw new UnauthorizedException();
     }
-    const accessToken = (cookies[Cookies.ACCESS_TOKEN] ?? auth ?? '').replace(
+    const accessToken = (auth ?? cookies[Cookies.ACCESS_TOKEN] ?? '').replace(
       /^Bearer\s/,
       '',
     );

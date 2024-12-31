@@ -53,6 +53,12 @@ export class User {
   address2: string;
 
   @Prop()
+  country: string;
+
+  @Prop()
+  countryCode: string;
+
+  @Prop()
   createdAt: Date;
 
   @Prop()

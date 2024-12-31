@@ -1,0 +1,5 @@
+export default () => ({
+  RELOADLY_CLIENT_ID: process.env.RELOADLY_CLIENT_ID,
+  RELOADLY_SECRET: process.env.RELOADLY_CLIENT_SECRET,
+  RELOADLY_HOST: process.env.RELOADLY_HOSTNAME,
+});
