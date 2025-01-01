@@ -33,7 +33,6 @@ export class AuthGuard implements CanActivate {
 
       const request = context.switchToHttp().getRequest();
       const token = this.extractTokenFromHeader(request);
-      console.log('token debug', token);
       if (!token) {
         throw new UnauthorizedException();
       }
@@ -49,7 +48,6 @@ export class AuthGuard implements CanActivate {
       request['user'] = payload;
       return true;
     } catch (error: any) {
-      console.log(error);
       throw new ForbiddenException(
         error.message || 'session expired! Please sign In',
       );

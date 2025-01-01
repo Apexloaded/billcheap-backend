@@ -29,21 +29,6 @@ export class ReloadlyService {
     return await this.getApi(url, AudienceType.Airtime);
   }
 
-  //   private async postApi(payload: KudaRequest) {
-  //     const cachedToken = await this.kudaAuthService.ensureValidToken();
-  //     const { data } = await firstValueFrom(
-  //       this.httpService.post(this.apiURL, payload, cachedToken).pipe(
-  //         map((response: AxiosResponse) => response.data),
-  //         catchError((error: AxiosError) => {
-  //           if (error.response.status == 401)
-  //             return throwError(
-  //               () => new UnauthorizedException(error.response.statusText),
-  //             );
-  //         }),
-  //       ),
-  //     );
-  //     return data;
-  //   }
   async getApi<T>(url: string, key: AudienceType, config?: AxiosRequestConfig) {
     const accessToken = await this.reloadlyAuthService.ensureValidToken(key);
     const { data } = await firstValueFrom(

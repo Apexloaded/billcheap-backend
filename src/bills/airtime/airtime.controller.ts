@@ -24,12 +24,17 @@ export class AirtimeController {
 
   @Get('/countries')
   listCountries() {
-    const url = this.reloadly.getUrl(
-      AudienceType.Airtime,
-      reloadlyPath.countries,
-    );
-    console.log(url);
-    return this.reloadly.getApi(url, AudienceType.Airtime);
+    try {
+      const url = this.reloadly.getUrl(
+        AudienceType.Airtime,
+        reloadlyPath.countries,
+      );
+      console.log(url);
+      return this.reloadly.getApi(url, AudienceType.Airtime);
+    } catch (e) {
+      console.error('Error fetching countries:', e);
+      throw e;
+    }
   }
   @Get('/providers')
   listProviders() {

@@ -33,10 +33,7 @@ export class TelegramAuthGuard implements CanActivate {
         return true;
       }
 
-      console.log('initData', initData);
-      console.log('Bot Token', this.botId);
       const isvalid = await isValid3rd(initData, this.botId);
-      console.log('isValid', isvalid);
       if (!isvalid) {
         throw new UnauthorizedException();
       }
