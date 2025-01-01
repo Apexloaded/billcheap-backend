@@ -5,6 +5,7 @@ import { ReloadlyModule } from '@/reloadly/reloadly.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { AirtimeBill, AirtimeBillSchema } from './schemas/airtime.schema';
 import { AirtimeProcessor } from './airtime.processor';
+import { HttpModule } from '@nestjs/axios';
 
 @Module({
   imports: [
@@ -12,6 +13,7 @@ import { AirtimeProcessor } from './airtime.processor';
       { name: AirtimeBill.name, schema: AirtimeBillSchema },
     ]),
     ReloadlyModule,
+    HttpModule
   ],
   controllers: [AirtimeController],
   providers: [AirtimeService, AirtimeProcessor],
