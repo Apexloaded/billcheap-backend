@@ -19,7 +19,7 @@ export class BillCheapListener implements OnModuleInit {
     private readonly model: Model<ContractEvent>,
     private readonly billsProcessor: BillsProcessor,
   ) {
-    this.deployedAtBlock = 46968009; //46947603;
+    this.deployedAtBlock = 46984536;
   }
 
   async onModuleInit() {
