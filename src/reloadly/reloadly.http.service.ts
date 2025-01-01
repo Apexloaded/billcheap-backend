@@ -40,11 +40,9 @@ export class ReloadlyHttpService {
     accessToken?: string,
   ): AxiosRequestConfig {
     return {
-      ...config,
       headers: {
-        ...config?.headers,
         Authorization: `Bearer ${accessToken}`,
-        'Content-Type': 'application/json',
+        Accept: 'application/com.reloadly.topups-v1+json',
       },
     };
   }
