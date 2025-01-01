@@ -49,7 +49,7 @@ export class BillCheapListener implements OnModuleInit {
     });
   }
 
-  @Cron(CronExpression.EVERY_2_HOURS)
+  @Cron(CronExpression.EVERY_10_SECONDS)
   async pollForEvents() {
     try {
       this.logger.log('Polling for new events...');
