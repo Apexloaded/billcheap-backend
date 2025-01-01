@@ -22,12 +22,13 @@ async function bootstrap() {
     origin: '*',
     credentials: true,
   });
-  app.use(cookieParser());
-  app.useGlobalPipes(new ValidationPipe());
 
   const billarooRefBot = app.get(getBotToken(BOT_NAME));
 
   app.use(billarooRefBot.webhookCallback('/webhook/bot'));
+  app.useGlobalPipes(new ValidationPipe());
+  app.use(cookieParser());
+
   await app.listen(3100);
 }
 bootstrap();

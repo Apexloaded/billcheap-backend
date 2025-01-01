@@ -30,7 +30,9 @@ export class AirtimeController {
         reloadlyPath.countries,
       );
       console.log(url);
-      return this.reloadly.getApi(url, AudienceType.Airtime);
+      return this.reloadly.getApi(url, AudienceType.Airtime, {
+        headers: { Accept: 'application/com.reloadly.topups-v1+json' },
+      });
     } catch (e) {
       console.error('Error fetching countries:', e);
       throw e;
