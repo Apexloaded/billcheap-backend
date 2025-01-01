@@ -18,7 +18,10 @@ export class User {
   @Prop({ lowercase: true })
   billName: string;
 
-  @Prop({ unique: true, index: true })
+  @Prop({
+    unique: true,
+    index: true,
+  })
   billId: string;
 
   @Prop()

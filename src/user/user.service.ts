@@ -24,7 +24,7 @@ export class UserService {
 
   findOneOrCreate(
     filter: FilterQuery<User>,
-    createUserDto: CreateTGUserDto,
+    createUserDto: Partial<User>,
   ): Promise<UserDocument> {
     return this.userModel.findOneAndUpdate(
       filter,

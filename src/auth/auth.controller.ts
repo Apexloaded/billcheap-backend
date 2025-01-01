@@ -9,6 +9,8 @@ import { RefreshAuthGuard } from '@/guards/auth/refresh.guard';
 import { TelegramUser } from '@/user/schemas/user.schema';
 import { CreateTGUserDto } from '@/user/dto/create-user.dto';
 import { TelegramAuthGuard } from '@/guards/auth/telegram.guard';
+import { generateId } from '@/utils/generate-id';
+import * as crypto from 'crypto';
 
 @Controller('auth')
 export class AuthController {
@@ -45,7 +47,11 @@ export class AuthController {
 
       const user = await this.userService.findOneOrCreate(
         { telegramId: tg_user.telegramId },
-        { ...tg_user },
+        {
+          ...tg_user,
+          referralCode: crypto.randomBytes(4).toString('hex'),
+          billId: generateId({ dictionary: 'number', length: 6 }),
+        },
       );
 
       const payload = {
