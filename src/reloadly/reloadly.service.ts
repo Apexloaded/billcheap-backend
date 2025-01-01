@@ -35,7 +35,8 @@ export class ReloadlyService {
       this.httpService.get(url, accessToken, config).pipe(
         map((response: AxiosResponse<T>) => response),
         catchError((error: AxiosError) => {
-          console.error('Error:', error.response);
+          console.log('Reloadly Error', error);
+          //console.error('Error:', error.response);
           if (error.response?.status === 401) {
             return throwError(
               () => new UnauthorizedException(error.response.statusText),
