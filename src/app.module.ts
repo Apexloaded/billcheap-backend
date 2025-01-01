@@ -5,7 +5,7 @@ import { TelegrafModule } from 'nestjs-telegraf';
 import { session } from 'telegraf';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { BotModule } from './bot/bot.module';
-import telegramConfig from './config/telegram.config';
+import telegramConfig, { BOT_NAME } from './config/telegram.config';
 import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { RolesGuard } from './guards/role/roles.guard';
 import { UserModule } from './user/user.module';
@@ -40,9 +40,17 @@ import { ScheduleModule } from '@nestjs/schedule';
     }),
     TelegrafModule.forRootAsync({
       imports: [ConfigModule],
-      useFactory: async (configService: ConfigService) => ({
-        token: configService.get('BOT_TOKEN'),
+      botName: BOT_NAME,
+      useFactory: (configService: ConfigService) => ({
+        token: configService.get<string>('BOT_TOKEN'),
         middlewares: [session()],
+        include: [BotModule],
+        launchOptions: {
+          webhook: {
+            domain: configService.get<string>('HOSTNAME'),
+            path: '/webhook/bot',
+          },
+        },
       }),
       inject: [ConfigService],
     }),

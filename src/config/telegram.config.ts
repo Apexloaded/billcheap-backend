@@ -5,3 +5,5 @@ export default () => ({
   CHANNEL_URL: process.env.CHANNEL_URL,
   BOT_NAME: process.env.BOT_NAME,
 });
+
+export const BOT_NAME = 'billcheap_bot';
