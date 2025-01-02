@@ -3,10 +3,20 @@ import { Injectable } from '@nestjs/common';
 import { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { Observable } from 'rxjs';
 import { ReloadlyAuthRequest } from './dto/reloadly-auth.dto';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class ReloadlyHttpService {
-  constructor(private readonly httpService: HttpService) {}
+  private readonly apiUrl: string;
+  private readonly appKey: string;
+
+  constructor(
+    private readonly httpService: HttpService,
+    private readonly config: ConfigService,
+  ) {
+    this.apiUrl = this.config.get('RELOADLY_ALT_HOST');
+    this.appKey = this.config.get('AppID');
+  }
 
   auth(
     url: string,
@@ -22,8 +32,8 @@ export class ReloadlyHttpService {
     accessToken: string,
     config?: AxiosRequestConfig,
   ): Observable<AxiosResponse<any>> {
-    config = this.addAuthorizationHeader(config, accessToken);
-    return this.httpService.post(url, data, config);
+    config = this.addAuthHeader(url, accessToken);
+    return this.httpService.post(this.apiUrl, data, config);
   }
 
   get(
@@ -31,8 +41,8 @@ export class ReloadlyHttpService {
     accessToken: string,
     config?: AxiosRequestConfig,
   ): Observable<AxiosResponse<any>> {
-    config = this.addAuthorizationHeader(config, accessToken);
-    return this.httpService.get(url, config);
+    config = this.addAuthHeader(url, accessToken);
+    return this.httpService.get(this.apiUrl, config);
   }
 
   private addAuthorizationHeader(
@@ -43,6 +53,21 @@ export class ReloadlyHttpService {
       headers: {
         Authorization: `Bearer ${accessToken}`,
         Accept: 'application/com.reloadly.topups-v1+json',
+      },
+    };
+  }
+
+  private addAuthHeader(
+    url?: string,
+    accessToken?: string,
+  ): AxiosRequestConfig {
+    return {
+      headers: {
+        'x-audience-url': url,
+        'x-reloadly-access-token': accessToken,
+        'x-bc-key': this.appKey,
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
       },
     };
   }
