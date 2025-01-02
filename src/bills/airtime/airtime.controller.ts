@@ -35,8 +35,10 @@ export class AirtimeController {
         reloadlyPath.countries,
       );
 
+      console.log(url);
+
       this.httpService
-        .get(url, {
+        .get('https://topups-sandbox.reloadly.com/countries', {
           headers: {
             'Content-Type': 'application/json',
             Authorization:
