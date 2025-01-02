@@ -36,31 +36,34 @@ export class AirtimeController {
       );
 
       console.log(url);
+      const res = await firstValueFrom(
+        this.httpService
+          .get('https://topups-sandbox.reloadly.com/countries', {
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization:
+                'Bearer eyJraWQiOiI1N2JjZjNhNy01YmYwLTQ1M2QtODQ0Mi03ODhlMTA4OWI3MDIiLCJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIyMDcwNSIsImlzcyI6Imh0dHBzOi8vcmVsb2FkbHktc2FuZGJveC5hdXRoMC5jb20vIiwiaHR0cHM6Ly9yZWxvYWRseS5jb20vc2FuZGJveCI6dHJ1ZSwiaHR0cHM6Ly9yZWxvYWRseS5jb20vcHJlcGFpZFVzZXJJZCI6IjIwNzA1IiwiZ3R5IjoiY2xpZW50LWNyZWRlbnRpYWxzIiwiYXVkIjoiaHR0cHM6Ly90b3B1cHMtaHMyNTYtc2FuZGJveC5yZWxvYWRseS5jb20iLCJuYmYiOjE3MzU4MTA3MzgsImF6cCI6IjIwNzA1Iiwic2NvcGUiOiJzZW5kLXRvcHVwcyByZWFkLW9wZXJhdG9ycyByZWFkLXByb21vdGlvbnMgcmVhZC10b3B1cHMtaGlzdG9yeSByZWFkLXByZXBhaWQtYmFsYW5jZSByZWFkLXByZXBhaWQtY29tbWlzc2lvbnMiLCJleHAiOjE3MzU4OTcxMzgsImh0dHBzOi8vcmVsb2FkbHkuY29tL2p0aSI6IjdiNzQ2NzQwLWQ0YTUtNDAyMy05YjY1LTIyYjM4NzAxNmM1YSIsImlhdCI6MTczNTgxMDczOCwianRpIjoiZjBmN2NkNTAtNGFlZi00MTk1LWJkMjAtMWM1ODQxZjI1ZjZjIn0.4nHe2d_N8hshIBopwxxj7w6J1F4TLAnV_ejDPs7wKw0',
+            },
+          })
+          .pipe(
+            map((response: AxiosResponse) => {
+              console.log('Response', response);
+              return response;
+            }),
+            catchError((error: AxiosError) => {
+              console.log('Reloadly Error', error);
+              //console.error('Error:', error.response);
+              if (error.response?.status === 401) {
+                return throwError(
+                  () => new UnauthorizedException(error.response.statusText),
+                );
+              }
+              return throwError(() => error); // Rethrow other errors
+            }),
+          ),
+      );
 
-      this.httpService
-        .get('https://topups-sandbox.reloadly.com/countries', {
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization:
-              'Bearer eyJraWQiOiI1N2JjZjNhNy01YmYwLTQ1M2QtODQ0Mi03ODhlMTA4OWI3MDIiLCJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIyMDcwNSIsImlzcyI6Imh0dHBzOi8vcmVsb2FkbHktc2FuZGJveC5hdXRoMC5jb20vIiwiaHR0cHM6Ly9yZWxvYWRseS5jb20vc2FuZGJveCI6dHJ1ZSwiaHR0cHM6Ly9yZWxvYWRseS5jb20vcHJlcGFpZFVzZXJJZCI6IjIwNzA1IiwiZ3R5IjoiY2xpZW50LWNyZWRlbnRpYWxzIiwiYXVkIjoiaHR0cHM6Ly90b3B1cHMtaHMyNTYtc2FuZGJveC5yZWxvYWRseS5jb20iLCJuYmYiOjE3MzU4MTA3MzgsImF6cCI6IjIwNzA1Iiwic2NvcGUiOiJzZW5kLXRvcHVwcyByZWFkLW9wZXJhdG9ycyByZWFkLXByb21vdGlvbnMgcmVhZC10b3B1cHMtaGlzdG9yeSByZWFkLXByZXBhaWQtYmFsYW5jZSByZWFkLXByZXBhaWQtY29tbWlzc2lvbnMiLCJleHAiOjE3MzU4OTcxMzgsImh0dHBzOi8vcmVsb2FkbHkuY29tL2p0aSI6IjdiNzQ2NzQwLWQ0YTUtNDAyMy05YjY1LTIyYjM4NzAxNmM1YSIsImlhdCI6MTczNTgxMDczOCwianRpIjoiZjBmN2NkNTAtNGFlZi00MTk1LWJkMjAtMWM1ODQxZjI1ZjZjIn0.4nHe2d_N8hshIBopwxxj7w6J1F4TLAnV_ejDPs7wKw0',
-          },
-        })
-        .pipe(
-          map((response: AxiosResponse) => {
-            console.log('Response', response);
-            return response;
-          }),
-          catchError((error: AxiosError) => {
-            console.log('Reloadly Error', error);
-            //console.error('Error:', error.response);
-            if (error.response?.status === 401) {
-              return throwError(
-                () => new UnauthorizedException(error.response.statusText),
-              );
-            }
-            return throwError(() => error); // Rethrow other errors
-          }),
-        );
+      return res;
 
       // const { data } = await firstValueFrom(
       //   this.httpService
