@@ -48,6 +48,9 @@ export class Transaction {
   @Prop({ min: 0, required: true })
   amount: number;
 
+  @Prop({ required: true })
+  amountInUsd: number;
+
   @Prop() // To be updated when event is emitted from blockchain
   amountInWei: bigint;
 

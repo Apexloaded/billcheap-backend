@@ -31,6 +31,7 @@
     "@nestjs/platform-express": "^10.0.0",
     "@nestjs/schedule": "^4.1.2",
     "@telegram-apps/init-data-node": "^1.2.1",
+    "argon2": "^0.41.1",
     "axios": "^1.7.9",
     "cache-manager": "^6.3.2",
     "cache-manager-redis-yet": "^5.1.5",

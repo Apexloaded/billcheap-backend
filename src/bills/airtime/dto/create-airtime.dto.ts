@@ -15,6 +15,9 @@ export class CreateAirtimeDto {
   token: string;
 
   @IsString()
+  usdValue: string;
+
+  @IsString()
   providerName: string;
 
   @IsString()
@@ -22,7 +25,7 @@ export class CreateAirtimeDto {
 
   @IsString()
   phoneNumber: string;
-
+  
   @IsString()
   countryCode: string;
 }

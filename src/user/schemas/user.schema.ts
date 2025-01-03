@@ -4,6 +4,7 @@ import { Role } from 'src/enums/roles.enum';
 import { Exclude, Transform } from 'class-transformer';
 import { generateId } from '@/utils/generate-id';
 import * as crypto from 'crypto';
+import { toHex } from 'viem';
 
 export type UserDocument = HydratedDocument<User>;
 
@@ -39,6 +40,9 @@ export class User {
   @Prop({ select: false })
   @Exclude()
   pin: string;
+
+  @Prop()
+  wallet: string;
 
   @Prop()
   referrerBy: string;
@@ -87,7 +91,7 @@ UserSchema.pre<UserDocument>('save', function (next) {
     this.referralCode = crypto.randomBytes(4).toString('hex');
   }
   if (!this.billId) {
-    this.billId = generateId({ dictionary: 'number', length: 6 });
+    this.billId = generateId({ dictionary: 'number', length: 8 });
   }
   next();
 });

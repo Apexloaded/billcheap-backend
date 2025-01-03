@@ -14,8 +14,66 @@ export class TransactionService {
     return this.txModel.create(createTransactionDto);
   }
 
-  findAll() {
-    return `This action returns all transaction`;
+  findAll(userId: string, page: number, pageSize: number) {
+    const skip = page * pageSize;
+    return this.txModel.aggregate([
+      { $match: { $expr: { $eq: ['$userId', { $toObjectId: userId }] } } },
+      {
+        $lookup: {
+          from: 'bills',
+          localField: 'billId',
+          foreignField: '_id',
+          as: 'bills',
+        },
+      },
+      { $unwind: '$bills' },
+      {
+        $lookup: {
+          from: 'airtimebills',
+          localField: 'bills._id',
+          foreignField: 'bill',
+          as: 'airtime',
+        },
+      },
+      {
+        $addFields: {
+          id: '$_id',
+          billType: '$bills.billType',
+          billStatus: '$bills.status',
+          reference: '$bills.reference',
+          metaData: {
+            $switch: {
+              branches: [
+                {
+                  case: { $eq: ['$bills.billType', 'AIRTIME'] },
+                  then: { $arrayElemAt: ['$airtime', 0] },
+                },
+                // {
+                //   case: { $eq: ['$bill_type', 'Data'] },
+                //   then: { $arrayElemAt: ['$data_bill', 0] },
+                // },
+                // {
+                //   case: { $eq: ['$bill_type', 'Cable'] },
+                //   then: { $arrayElemAt: ['$cable_bill', 0] },
+                // },
+              ],
+              default: null,
+            },
+          },
+        },
+      },
+      {
+        $sort: { createdAt: -1 },
+      },
+      {
+        $project: {
+          _id: 0,
+          __v: 0,
+          bills: 0,
+          airtime: 0,
+        },
+      },
+    ]);
   }
 
   findOne(filter: FilterQuery<Transaction>) {

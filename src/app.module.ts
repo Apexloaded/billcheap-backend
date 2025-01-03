@@ -23,6 +23,7 @@ import { TransactionModule } from './transaction/transaction.module';
 import { BillCheapModule } from './contracts/billcheap/billcheap.module';
 import contractConfig from './config/contract.config';
 import { ScheduleModule } from '@nestjs/schedule';
+import { TokensModule } from './tokens/tokens.module';
 
 @Module({
   imports: [
@@ -82,6 +83,7 @@ import { ScheduleModule } from '@nestjs/schedule';
     BillsModule,
     TransactionModule,
     BillCheapModule,
+    TokensModule,
   ],
   controllers: [AppController],
   providers: [

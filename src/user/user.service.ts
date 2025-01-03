@@ -18,14 +18,14 @@ export class UserService {
     return `This action returns all user`;
   }
 
-  findOne(filter: FilterQuery<UserDocument>) {
+  findOne(filter: FilterQuery<User>) {
     return this.userModel.findOne(filter);
   }
 
   findOneOrCreate(
     filter: FilterQuery<User>,
     createUserDto: Partial<User>,
-  ): Promise<UserDocument> {
+  ): Promise<User> {
     return this.userModel.findOneAndUpdate(
       filter,
       { $setOnInsert: createUserDto },

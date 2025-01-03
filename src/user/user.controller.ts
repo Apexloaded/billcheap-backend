@@ -1,11 +1,24 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Req,
+} from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { TokensService } from '@/tokens/tokens.service';
 
 @Controller('user')
 export class UserController {
-  constructor(private readonly userService: UserService) {}
+  constructor(
+    private readonly userService: UserService,
+    private readonly tokenService: TokensService,
+  ) {}
 
   @Post()
   create(@Body() createUserDto: CreateUserDto) {
@@ -17,9 +30,22 @@ export class UserController {
     return this.userService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    //return this.userService.findOne(+id);
+  @Get('profile')
+  userProfile(@Req() req: Request) {
+    const authUser = req['user'];
+    return this.userService.findOne({ telegramId: authUser.telegramId });
+  }
+
+  @Get('balance')
+  async userBalance(@Req() req: Request) {
+    const authUser = req['user'];
+    const user = await this.userService.findOne({
+      telegramId: authUser.telegramId,
+    });
+    const tokens = await this.tokenService.queryBalance(
+      user.wallet as `0x${string}`,
+    );
+    return tokens;
   }
 
   @Patch(':id')

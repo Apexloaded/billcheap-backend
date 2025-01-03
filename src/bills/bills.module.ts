@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { BillsService } from './bills.service';
 import { BillsController } from './bills.controller';
 import { AirtimeModule } from './airtime/airtime.module';
@@ -12,7 +12,7 @@ import { BillsProcessor } from './bills.processor';
   imports: [
     AirtimeModule,
     MongooseModule.forFeature([{ name: Bill.name, schema: BillSchema }]),
-    UserModule,
+    forwardRef(() => UserModule),
     TransactionModule,
   ],
   controllers: [BillsController],

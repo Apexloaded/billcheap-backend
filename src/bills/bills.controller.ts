@@ -69,6 +69,8 @@ export class BillsController {
       type: TxType.BILL_PAYMENT,
       paymentMethod: PaymentMethods.CRYPTO,
       tokenAddress: body.token,
+      description: `${body.providerName.split(' ')[0]} Airtime Topup`,
+      amountInUsd: parseFloat(body.usdValue),
     };
     const transaction = await this.createTransaction(txPayload);
 

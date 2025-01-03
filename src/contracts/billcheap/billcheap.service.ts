@@ -3,6 +3,8 @@ import { ConfigService } from '@nestjs/config';
 import { ethers, Contract } from 'ethers';
 import BillCheapAbi from './abi/billcheap.abi';
 import { ContractEvents } from '@/enums/contract.enum';
+import { ListedTokenDocument } from '@/tokens/schemas/token.schema';
+import { erc20Abi, formatEther, zeroAddress } from 'viem';
 
 export interface BlockchainEvent {
   name: string;
@@ -68,28 +70,6 @@ export class BillCheapService {
     }
 
     return events;
-
-    // const filter = this.contract.filters.TopUpInitialized();
-    // const maxBlockRange = 50000; // Maximum allowed block range
-    // const events: (ethers.EventLog | ethers.Log)[] = [];
-
-    // let startBlock = fromBlock;
-    // while (startBlock <= toBlock) {
-    //   const endBlock = Math.min(startBlock + maxBlockRange - 1, toBlock);
-    //   const chunkEvents = await this.contract.queryFilter(
-    //     filter,
-    //     startBlock,
-    //     endBlock,
-    //   );
-    //   events.push(...chunkEvents);
-    //   startBlock = endBlock + 1; // Move to the next chunk
-    // }
-
-    // return events;
-
-    // const filter = this.contract.filters.TopUpInitialized();
-    // console.log(filter);
-    // return this.contract.queryFilter(filter, fromBlock, toBlock);
   }
 
   subscribeToEvents(callback: (event: BlockchainEvent) => void) {
@@ -108,5 +88,26 @@ export class BillCheapService {
     }
 
     this.logger.log('Subscribed to real-time events');
+  }
+
+  getAccountBalance(tokens: ListedTokenDocument[], address: `0x${string}`) {
+    return Promise.all(
+      tokens.map(
+        async ({ address: tokenAddress, name, symbol, icon, token }) => {
+          let balance: bigint;
+          if (tokenAddress === zeroAddress) {
+            balance = await this.provider.getBalance(address);
+          } else {
+            const erc20Contract = new Contract(
+              tokenAddress,
+              erc20Abi,
+              this.provider,
+            );
+            balance = await erc20Contract.balanceOf(address);
+          }
+          return { name, symbol, icon, token, balance: formatEther(balance) };
+        },
+      ),
+    );
   }
 }
