@@ -38,14 +38,18 @@ export class UserController {
 
   @Get('balance')
   async userBalance(@Req() req: Request) {
-    const authUser = req['user'];
-    const user = await this.userService.findOne({
-      telegramId: authUser.telegramId,
-    });
-    const tokens = await this.tokenService.queryBalance(
-      user.wallet as `0x${string}`,
-    );
-    return tokens;
+    try {
+      const authUser = req['user'];
+      const user = await this.userService.findOne({
+        telegramId: authUser.telegramId,
+      });
+      const tokens = await this.tokenService.queryBalance(
+        user.wallet as `0x${string}`,
+      );
+      return tokens;
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   @Patch(':id')
