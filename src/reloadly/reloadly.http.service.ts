@@ -42,6 +42,7 @@ export class ReloadlyHttpService {
     config?: AxiosRequestConfig,
   ): Observable<AxiosResponse<any>> {
     config = this.addAuthHeader(url, accessToken);
+    console.log(config);
     return this.httpService.get(this.apiUrl, config);
   }
 

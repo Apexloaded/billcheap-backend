@@ -6,16 +6,16 @@ import { getBotToken } from 'nestjs-telegraf';
 import { BOT_NAME } from './config/telegram.config';
 
 async function bootstrap() {
-  const logger = new Logger('Bootstrap');
-  process.on('unhandledRejection', (reason, promise) => {
-    console.log(promise);
-    logger.error(`Unhandled Rejection at: ${promise}, reason: ${reason}`);
-    // Application specific logging, throwing an error, or other logic here
-  });
-  process.on('uncaughtException', (error) => {
-    logger.error(`Uncaught Exception: ${error.message}`, error.stack);
-    // Application specific logging, throwing an error, or other logic here
-  });
+  // const logger = new Logger('Bootstrap');
+  // process.on('unhandledRejection', (reason, promise) => {
+  //   console.log(promise);
+  //   logger.error(`Unhandled Rejection at: ${promise}, reason: ${reason}`);
+  //   // Application specific logging, throwing an error, or other logic here
+  // });
+  // process.on('uncaughtException', (error) => {
+  //   logger.error(`Uncaught Exception: ${error.message}`, error.stack);
+  //   // Application specific logging, throwing an error, or other logic here
+  // });
 
   const app = await NestFactory.create(AppModule);
   app.enableCors({
