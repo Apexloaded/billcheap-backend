@@ -24,6 +24,7 @@ import { BillCheapModule } from './contracts/billcheap/billcheap.module';
 import contractConfig from './config/contract.config';
 import { ScheduleModule } from '@nestjs/schedule';
 import { TokensModule } from './tokens/tokens.module';
+import { HttpModule } from '@nestjs/axios';
 
 @Module({
   imports: [
@@ -54,6 +55,10 @@ import { TokensModule } from './tokens/tokens.module';
         },
       }),
       inject: [ConfigService],
+    }),
+    HttpModule.register({
+      timeout: 10000,
+      maxRedirects: 5,
     }),
     ScheduleModule.forRoot(),
     // CacheModule.registerAsync({
@@ -90,7 +95,7 @@ import { TokensModule } from './tokens/tokens.module';
     AppService,
     { provide: APP_GUARD, useClass: AuthGuard },
     { provide: APP_GUARD, useClass: RolesGuard },
-    { provide: APP_INTERCEPTOR, useClass: ResponseInterceptor },
+    //{ provide: APP_INTERCEPTOR, useClass: ResponseInterceptor },
   ],
 })
 export class AppModule {}
