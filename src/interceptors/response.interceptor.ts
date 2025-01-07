@@ -13,12 +13,13 @@ export class ResponseInterceptor implements NestInterceptor {
     context: ExecutionContext,
     next: CallHandler<any>,
   ): Observable<any> | Promise<Observable<any>> {
+    console.log(context);
     const now = Date.now();
     const type = context.getType() as any;
     if (type == 'telegraf') {
       return next.handle();
     }
-    
+
     return next.handle().pipe(
       map((data: any) => this.responseHandler(data, context)),
       catchError((error: HttpException) => {
