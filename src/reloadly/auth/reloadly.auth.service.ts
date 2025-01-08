@@ -32,9 +32,11 @@ export class ReloadlyAuthService {
   }
 
   public async authenticate(key: AudienceType): Promise<string> {
+    console.log(key);
     const authUrl = getProtocol(
       `${ReloadlySubPath.Auth}.${this.apiUrl}/${reloadlyPath.auth}`,
     );
+    console.log(authUrl);
     const authResponse = await firstValueFrom(
       this.httpService
         .auth(
