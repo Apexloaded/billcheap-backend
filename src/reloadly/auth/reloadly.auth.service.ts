@@ -40,12 +40,12 @@ export class ReloadlyAuthService {
       `${ReloadlySubPath.Auth}.${this.apiUrl}/${reloadlyPath.auth}`,
     );
     console.log(authUrl);
-    const credentials = {
+    const credentials = JSON.stringify({
       audience: this.getAudience(key),
       client_id: this.clientId,
       client_secret: this.clientSecret,
       grant_type: 'client_credentials',
-    } as ReloadlyAuthRequest;
+    });
     console.log(credentials);
     const { data } = await firstValueFrom(
       this.httpService

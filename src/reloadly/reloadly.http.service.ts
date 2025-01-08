@@ -20,7 +20,7 @@ export class ReloadlyHttpService {
 
   auth(
     url: string,
-    data?: ReloadlyAuthRequest,
+    data?: string,
     config?: AxiosRequestConfig,
   ): Observable<AxiosResponse<any>> {
     return this.httpService.post(url, data, config);
