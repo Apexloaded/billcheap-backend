@@ -56,12 +56,18 @@ export class ReloadlyAuthService {
           },
         })
         .pipe(
-          map((response: AxiosResponse) => response),
+          map((response: AxiosResponse) => {
+            console.log(response);
+            return response;
+          }),
           catchError((error) => {
+            console.log(error);
             return throwError(() => new Error(error));
           }),
         ),
     );
+
+    console.log(data);
 
     const authData = {
       audience: key,
