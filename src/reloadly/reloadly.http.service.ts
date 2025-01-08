@@ -51,18 +51,6 @@ export class ReloadlyHttpService {
     return this.httpService.get(this.apiUrl, config);
   }
 
-  private addAuthorizationHeader(
-    config?: AxiosRequestConfig,
-    accessToken?: string,
-  ): AxiosRequestConfig {
-    return {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-        Accept: 'application/com.reloadly.topups-v1+json',
-      },
-    };
-  }
-
   private addAuthHeader(
     url?: string,
     accessToken?: string,

@@ -7,6 +7,7 @@ import { Bill, BillSchema } from './schema/bill.schema';
 import { UserModule } from '@/user/user.module';
 import { TransactionModule } from '@/transaction/transaction.module';
 import { BillsProcessor } from './bills.processor';
+import { ElectricityModule } from './electricity/electricity.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { BillsProcessor } from './bills.processor';
     MongooseModule.forFeature([{ name: Bill.name, schema: BillSchema }]),
     forwardRef(() => UserModule),
     TransactionModule,
+    ElectricityModule,
   ],
   controllers: [BillsController],
   providers: [BillsService, BillsProcessor],

@@ -15,13 +15,16 @@ export const reloadlyPath = {
   autoDetectProvider: (phone: string, iso: string) =>
     `operators/auto-detect/phone/${phone}/countries/${iso}`,
   fxRate: 'operators/fx-rate',
+  billers: 'billers',
 };
 
 export enum AudienceType {
   Airtime = 'airtime',
+  Utilities = 'utilities',
 }
 
 export const Audience = {
   // [AudienceType.Airtime]: 'topups-sandbox',
   [AudienceType.Airtime]: isDev ? 'topups-sandbox' : 'topups',
+  [AudienceType.Utilities]: isDev ? 'utilities-sandbox' : 'utilities',
 };

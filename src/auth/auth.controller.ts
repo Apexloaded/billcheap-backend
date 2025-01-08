@@ -53,7 +53,7 @@ export class AuthController {
       }
 
       const { wallet, encryptedWallet } = await this.extractWalletAddress(
-        tg_user.telegramId.toString(),
+        tg_user.telegramId,
       );
       const user = await this.userService.findOneOrCreate(
         { telegramId: tg_user.telegramId },
@@ -115,7 +115,7 @@ export class AuthController {
     };
   }
 
-  private async extractWalletAddress(userId: string) {
+  private async extractWalletAddress(userId: number) {
     const salt = toHex(
       crypto.createHash('sha256').update(`${userId}`).digest('hex'),
     );

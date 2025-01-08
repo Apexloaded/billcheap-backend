@@ -35,20 +35,10 @@ export class ReloadlyAuthService {
   }
 
   public async authenticate(key: AudienceType): Promise<string> {
-    console.log(key);
     const authUrl = getProtocol(
       `${ReloadlySubPath.Auth}.${this.apiUrl}/${reloadlyPath.auth}`,
     );
 
-    console.log(authUrl);
-
-    const credentials = {
-      client_id: this.clientId,
-      client_secret: this.clientSecret,
-      grant_type: 'client_credentials',
-      audience: this.getAudience(key),
-    };
-    console.log(credentials);
     const { data } = await firstValueFrom(
       this.httpService
         .auth(
@@ -68,17 +58,13 @@ export class ReloadlyAuthService {
         )
         .pipe(
           map((response: AxiosResponse) => {
-            console.log(response);
             return response;
           }),
           catchError((error) => {
-            console.log(error);
             return throwError(() => new Error(error));
           }),
         ),
     );
-
-    console.log(data);
 
     const authData = {
       audience: key,
@@ -88,22 +74,16 @@ export class ReloadlyAuthService {
       scope: data.scope,
     };
 
-    console.log(authData);
-
     this.tokenStorageService.setAuthToken(authData);
     return authData.accessToken;
   }
 
   public async ensureValidToken(key: AudienceType): Promise<string> {
     let { token, isExpired } = await this.verifyToken(key);
-    console.log('b4 vali', token);
-    console.log(isExpired);
     if (!token || isExpired) {
-      console.log('Authenticate here');
       // Token not available or expired, authenticate and obtain a new token
       token = await this.authenticate(key);
     }
-    console.log('after vali', token);
     return token;
   }
 

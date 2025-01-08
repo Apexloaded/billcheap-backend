@@ -105,11 +105,16 @@ export class BillCheapService {
             );
             balance = await erc20Contract.balanceOf(address);
           }
-          return { name, symbol, icon, token, balance: formatEther(balance) };
+          return {
+            name,
+            symbol,
+            icon,
+            token,
+            balance: formatEther(balance),
+            address: tokenAddress,
+          };
         },
       ),
     );
   }
-
-  
 }

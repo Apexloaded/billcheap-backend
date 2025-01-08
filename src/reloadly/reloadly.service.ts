@@ -31,7 +31,6 @@ export class ReloadlyService {
 
   async getApi<T>(url: string, key: AudienceType, config?: AxiosRequestConfig) {
     const accessToken = await this.reloadlyAuthService.ensureValidToken(key);
-    console.log('Access Token', accessToken);
     const { data } = await firstValueFrom(
       this.httpService.get(url, accessToken, config).pipe(
         map((response: AxiosResponse<T>) => response),

@@ -28,8 +28,7 @@ export class AirtimeController {
   ) {}
 
   @Get('/countries')
-  async listCountries()
-  {
+  async listCountries() {
     try {
       const url = this.reloadly.getUrl(
         AudienceType.Airtime,
@@ -53,7 +52,10 @@ export class AirtimeController {
     return this.reloadly.getApi(url, AudienceType.Airtime);
   }
   @Get('/provider/auto-detect/:phone/:iso')
-  autoDetectProvider(@Param('phone') phone: string, @Param('iso') iso: string) {
+  async autoDetectProvider(
+    @Param('phone') phone: string,
+    @Param('iso') iso: string,
+  ) {
     if (!phone || !iso) {
       throw new Error('Phone and ISO are required parameters.');
     }
@@ -72,36 +74,48 @@ export class AirtimeController {
       options as unknown as Record<string, string>,
     ).toString();
     const urlWithISO = `${url}?${queryParams}`;
-    return this.reloadly.getApi(urlWithISO, AudienceType.Airtime);
+    const operator = await this.reloadly.getApi<Provider>(
+      urlWithISO,
+      AudienceType.Airtime,
+    );
+
+    if (iso == 'NG' && operator.suggestedAmounts.length > 0) {
+      const { suggestedAmounts, ...rest } = operator;
+      return {
+        ...rest,
+        suggestedAmounts: this.airtimeService.suggestedAmounts(),
+      };
+    }
+
+    return operator;
   }
 
   @Get('/providers/:iso')
   async listProvidersByISO(
     @Param('iso') iso: string,
-    @Query('suggestedAmountsMap') suggestedAmountsMap: boolean = true,
-    @Query('suggestedAmounts') suggestedAmounts: boolean = true,
-    @Query('includePin') includePin: boolean = true,
-    @Query('dataOnly') dataOnly: boolean = false,
-    @Query('includeData') includeData: boolean = false,
+    @Query('suggestedAmountsMap') suggestedAmountsMap,
+    @Query('suggestedAmounts') suggestedAmounts,
+    @Query('includePin') includePin,
+    @Query('dataOnly') dataOnly,
+    @Query('includeData') includeData,
   ) {
     const url = this.reloadly.getUrl(
       AudienceType.Airtime,
       reloadlyPath.countryOperators(iso),
     );
 
-    const options = {
-      suggestedAmountsMap,
-      suggestedAmounts,
-      includePin,
-      dataOnly,
-      includeData,
-      includeBundles: false,
-    };
-
-    console.log(options);
+    let mappedOptions = Object.fromEntries(
+      Object.entries({
+        suggestedAmountsMap,
+        suggestedAmounts,
+        includePin,
+        dataOnly,
+        includeData,
+      }).map(([key, value]) => [key, value === 'true']),
+    );
 
     const queryParams = new URLSearchParams(
-      options as unknown as Record<string, string>,
+      mappedOptions as unknown as Record<string, string>,
     ).toString();
     const urlWithISO = `${url}?${queryParams}`;
 
@@ -116,33 +130,22 @@ export class AirtimeController {
     );
 
     const operators = response.filter((p) =>
-      options.dataOnly
+      mappedOptions.dataOnly === true
         ? p.denominationType === 'FIXED'
         : p.denominationType === 'RANGE',
     );
 
+    if (mappedOptions.dataOnly == false && iso == 'NG') {
+      return operators.map((op) => {
+        const { suggestedAmounts, ...rest } = op;
+        return {
+          ...rest,
+          suggestedAmounts: this.airtimeService.suggestedAmounts(),
+        };
+      });
+    }
+
     return operators;
-    // if (options.dataOnly) {
-    //   const operatorMap = new Map();
-
-    //   operators.forEach((operator) => {
-    //     const name = operator.name.split(' ')[0]; // Get the first word of the operator name
-    //     if (!operatorMap.has(name)) {
-    //       operatorMap.set(name, { ...operator, plans: [] });
-    //     }
-    //     operatorMap.get(name).plans.push({
-    //       id: operator.id,
-    //       name: operator.name,
-    //       fixedAmounts: operator.fixedAmounts,
-    //       fixedAmountsDescriptions: operator.fixedAmountsDescriptions,
-    //     });
-    //   });
-
-    //   const newArr = Array.from(operatorMap.values());
-    //   return newArr;
-    // } else {
-    //   return operators;
-    // }
   }
 
   @Get(':id')
