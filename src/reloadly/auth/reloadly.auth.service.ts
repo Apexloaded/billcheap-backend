@@ -11,7 +11,10 @@ import {
   reloadlyPath,
   ReloadlySubPath,
 } from '@/enums/reloadly.enum';
-import { ReloadlyAuthResponse } from '../dto/reloadly-auth.dto';
+import {
+  ReloadlyAuthRequest,
+  ReloadlyAuthResponse,
+} from '../dto/reloadly-auth.dto';
 import { jwtDecode } from 'jwt-decode';
 
 @Injectable()
@@ -37,27 +40,23 @@ export class ReloadlyAuthService {
       `${ReloadlySubPath.Auth}.${this.apiUrl}/${reloadlyPath.auth}`,
     );
     console.log(authUrl);
-    const authResponse = await firstValueFrom(
+    const credentials = {
+      audience: this.getAudience(key),
+      client_id: this.clientId,
+      client_secret: this.clientSecret,
+      grant_type: 'client_credentials',
+    } as ReloadlyAuthRequest;
+    console.log(credentials);
+    const { data } = await firstValueFrom(
       this.httpService
-        .auth(
-          `${authUrl}`,
-          {
-            audience: this.getAudience(key),
-            client_id: this.clientId,
-            client_secret: this.clientSecret,
-            grant_type: 'client_credentials',
+        .auth(`${authUrl}`, credentials, {
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
           },
-          {
-            headers: {
-              Accept: 'application/json',
-              'Content-Type': 'application/json',
-            },
-          },
-        )
+        })
         .pipe(
-          map(
-            (response: AxiosResponse) => response.data as ReloadlyAuthResponse,
-          ),
+          map((response: AxiosResponse) => response),
           catchError((error) => {
             return throwError(() => new Error(error));
           }),
@@ -66,10 +65,10 @@ export class ReloadlyAuthService {
 
     const authData = {
       audience: key,
-      accessToken: authResponse.access_token,
-      expiresIn: authResponse.expires_in,
-      tokenType: authResponse.token_type,
-      scope: authResponse.scope,
+      accessToken: data.access_token,
+      expiresIn: data.expires_in,
+      tokenType: data.token_type,
+      scope: data.scope,
     };
 
     console.log(authData);
