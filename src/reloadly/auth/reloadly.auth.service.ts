@@ -76,10 +76,13 @@ export class ReloadlyAuthService {
 
   public async ensureValidToken(key: AudienceType): Promise<string> {
     let { token, isExpired } = await this.verifyToken(key);
+    console.log('b4 vali', token);
+    console.log(isExpired);
     if (!token || isExpired) {
       // Token not available or expired, authenticate and obtain a new token
       token = await this.authenticate(key);
     }
+    console.log('after vali', token);
     return token;
   }
 
@@ -89,7 +92,7 @@ export class ReloadlyAuthService {
       this.isTokenExpired(key),
     ]);
     return {
-      token: token?.accessToken,
+      token: token?.accessToken ?? undefined,
       isExpired,
     };
   }
