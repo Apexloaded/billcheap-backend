@@ -42,21 +42,30 @@ export class ReloadlyAuthService {
 
     console.log(authUrl);
 
-    const credentials = JSON.stringify({
+    const credentials = {
       client_id: this.clientId,
       client_secret: this.clientSecret,
       grant_type: 'client_credentials',
       audience: this.getAudience(key),
-    });
+    };
     console.log(credentials);
     const { data } = await firstValueFrom(
       this.httpService
-        .auth(`${authUrl}`, credentials, {
-          headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
+        .auth(
+          `${authUrl}`,
+          {
+            client_id: this.clientId,
+            client_secret: this.clientSecret,
+            grant_type: 'client_credentials',
+            audience: this.getAudience(key),
           },
-        })
+          {
+            headers: {
+              Accept: 'application/json',
+              'Content-Type': 'application/json',
+            },
+          },
+        )
         .pipe(
           map((response: AxiosResponse) => {
             console.log(response);
