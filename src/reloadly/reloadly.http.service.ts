@@ -39,7 +39,7 @@ export class ReloadlyHttpService {
     config?: AxiosRequestConfig,
   ): Observable<AxiosResponse<any>> {
     config = this.addAuthHeader(url, accessToken);
-    return this.httpService.post(url, data, config);
+    return this.httpService.post(this.apiUrl, data, config);
   }
 
   get(
@@ -48,7 +48,7 @@ export class ReloadlyHttpService {
     config?: AxiosRequestConfig,
   ): Observable<AxiosResponse<any>> {
     config = this.addAuthHeader(url, accessToken);
-    return this.httpService.get(url, config);
+    return this.httpService.get(this.apiUrl, config);
   }
 
   private addAuthorizationHeader(
