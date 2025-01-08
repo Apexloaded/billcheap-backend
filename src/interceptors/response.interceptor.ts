@@ -13,7 +13,6 @@ export class ResponseInterceptor implements NestInterceptor {
     context: ExecutionContext,
     next: CallHandler<any>,
   ): Observable<any> | Promise<Observable<any>> {
-    console.log(context);
     const now = Date.now();
     const type = context.getType() as any;
     if (type == 'telegraf') {
