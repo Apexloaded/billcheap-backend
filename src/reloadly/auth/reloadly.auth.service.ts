@@ -70,6 +70,8 @@ export class ReloadlyAuthService {
       scope: authResponse.scope,
     };
 
+    console.log(authData);
+
     this.tokenStorageService.setAuthToken(authData);
     return authData.accessToken;
   }
@@ -79,6 +81,7 @@ export class ReloadlyAuthService {
     console.log('b4 vali', token);
     console.log(isExpired);
     if (!token || isExpired) {
+      console.log('Authenticate here');
       // Token not available or expired, authenticate and obtain a new token
       token = await this.authenticate(key);
     }

@@ -24,6 +24,7 @@ export class ReloadlyTokenStorageService {
     const update = {
       $set: body,
     };
+    console.log('setting body', body);
     return this.model.findOneAndUpdate(filter, update, options);
   }
 
