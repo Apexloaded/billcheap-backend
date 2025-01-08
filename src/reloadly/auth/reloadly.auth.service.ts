@@ -39,48 +39,35 @@ export class ReloadlyAuthService {
     const authUrl = getProtocol(
       `${ReloadlySubPath.Auth}.${this.apiUrl}/${reloadlyPath.auth}`,
     );
+
     console.log(authUrl);
-    const response = await fetch(authUrl, {
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-      },
-      method: 'POST',
-      body: JSON.stringify({
-        audience: this.getAudience(key),
-        client_id: this.clientId,
-        client_secret: this.clientSecret,
-        grant_type: 'client_credentials',
-      }),
+
+    const credentials = JSON.stringify({
+      client_id: this.clientId,
+      client_secret: this.clientSecret,
+      grant_type: 'client_credentials',
+      audience: this.getAudience(key),
     });
-    const data = await response.json();
-    console.log(data);
-    // const credentials = JSON.stringify({
-    //   audience: this.getAudience(key),
-    //   client_id: this.clientId,
-    //   client_secret: this.clientSecret,
-    //   grant_type: 'client_credentials',
-    // });
-    // console.log(credentials);
-    // const { data } = await firstValueFrom(
-    //   this.httpService
-    //     .auth(`${authUrl}`, credentials, {
-    //       headers: {
-    //         Accept: 'application/json',
-    //         'Content-Type': 'application/json',
-    //       },
-    //     })
-    //     .pipe(
-    //       map((response: AxiosResponse) => {
-    //         console.log(response);
-    //         return response;
-    //       }),
-    //       catchError((error) => {
-    //         console.log(error);
-    //         return throwError(() => new Error(error));
-    //       }),
-    //     ),
-    // );
+    console.log(credentials);
+    const { data } = await firstValueFrom(
+      this.httpService
+        .auth(`${authUrl}`, credentials, {
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+          },
+        })
+        .pipe(
+          map((response: AxiosResponse) => {
+            console.log(response);
+            return response;
+          }),
+          catchError((error) => {
+            console.log(error);
+            return throwError(() => new Error(error));
+          }),
+        ),
+    );
 
     console.log(data);
 
