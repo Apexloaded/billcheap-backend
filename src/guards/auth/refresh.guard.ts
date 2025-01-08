@@ -32,7 +32,7 @@ export class RefreshAuthGuard implements CanActivate {
       if (!isUser) {
         throw new UnauthorizedException();
       }
-
+      
       request['user'] = payload;
       return true;
     } catch (error: any) {
