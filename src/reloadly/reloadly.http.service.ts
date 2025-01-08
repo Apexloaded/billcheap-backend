@@ -23,7 +23,7 @@ export class ReloadlyHttpService {
     data?: ReloadlyAuthRequest,
     config?: AxiosRequestConfig,
   ): Observable<AxiosResponse<any>> {
-    return this.httpService.post(url, JSON.stringify(data), config);
+    return this.httpService.post(url, data, config);
   }
 
   post<T>(

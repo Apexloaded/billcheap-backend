@@ -22,6 +22,6 @@ export enum AudienceType {
 }
 
 export const Audience = {
-  [AudienceType.Airtime]: 'topups-sandbox',
-  //[AudienceType.Airtime]: isDev ? 'topups-sandbox' : 'topups',
+  // [AudienceType.Airtime]: 'topups-sandbox',
+  [AudienceType.Airtime]: isDev ? 'topups-sandbox' : 'topups',
 };
