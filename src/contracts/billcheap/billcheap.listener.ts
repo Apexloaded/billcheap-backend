@@ -19,7 +19,7 @@ export class BillCheapListener implements OnModuleInit {
     private readonly model: Model<ContractEvent>,
     private readonly billsProcessor: BillsProcessor,
   ) {
-    this.deployedAtBlock = 47043170;
+    this.deployedAtBlock = 47236658;
   }
 
   async onModuleInit() {
@@ -43,13 +43,13 @@ export class BillCheapListener implements OnModuleInit {
   }
 
   private subscribeToRealTimeEvents() {
-    // this.billCheapService.subscribeToEvents(async (event: BlockchainEvent) => {
-    //   this.logger.log('************Subscribed Events:************', event);
-    //   await this.processEvent(event);
-    // });
+    this.billCheapService.subscribeToEvents(async (event: BlockchainEvent) => {
+      this.logger.log('************Subscribed Events:************', event);
+      await this.processEvent(event);
+    });
   }
 
-  //@Cron(CronExpression.EVERY_10_SECONDS)
+  @Cron(CronExpression.EVERY_10_SECONDS)
   async pollForEvents() {
     try {
       this.logger.log('Polling for new events...');
