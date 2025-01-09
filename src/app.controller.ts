@@ -15,6 +15,6 @@ export class AppController {
   @Public()
   @Post('/webhook/bot')
   handleUpdate(@Req() req: Request) {
-    console.log('Referral');
+    console.log(req);
   }
 }
