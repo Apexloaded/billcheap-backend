@@ -1,6 +1,6 @@
 import { User } from '@/user/schemas/user.schema';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument, Types } from 'mongoose';
+import mongoose, { HydratedDocument, Types } from 'mongoose';
 
 export enum BillStatus {
   PENDING = 'PENDING',
@@ -21,7 +21,7 @@ export type BillDocument = HydratedDocument<Bill>;
 
 @Schema({ timestamps: true })
 export class Bill {
-  @Prop({ type: Types.ObjectId, ref: 'User', required: true })
+  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true })
   user: User;
 
   @Prop({ enum: BillType, required: true })
