@@ -5,6 +5,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { ListedToken, ListedTokenSchema } from './schemas/token.schema';
 import { BillCheapModule } from '@/contracts/billcheap/billcheap.module';
 import { HttpModule } from '@nestjs/axios';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
@@ -13,6 +14,7 @@ import { HttpModule } from '@nestjs/axios';
     ]),
     BillCheapModule,
     HttpModule,
+    ConfigModule,
   ],
   controllers: [TokensController],
   providers: [TokensService],

@@ -5,4 +5,5 @@ export default () => ({
   expiresIn: process.env.JWT_EXPIRE_IN,
   DB_URI: process.env.MONGO_DB_URI,
   HOSTNAME: process.env.HOSTNAME,
+  TG_APP_API: process.env.TG_APP_API,
 });

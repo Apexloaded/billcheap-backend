@@ -13,13 +13,21 @@ import { UpdateTokenDto } from './dto/update-token.dto';
 import { HttpService } from '@nestjs/axios';
 import { catchError, firstValueFrom, map, throwError } from 'rxjs';
 import { AxiosError, AxiosResponse } from 'axios';
+import { ConfigService } from '@nestjs/config';
 
 @Controller('tokens')
 export class TokensController {
+  private apiHost: string;
+  private appKey: string;
+
   constructor(
     private readonly tokensService: TokensService,
     private http: HttpService,
-  ) {}
+    private readonly config: ConfigService,
+  ) {
+    this.apiHost = this.config.get('TG_APP_API');
+    this.appKey = this.config.get('AppID');
+  }
 
   @Post()
   create(@Body() createTokenDto: CreateTokenDto) {
@@ -33,14 +41,15 @@ export class TokensController {
       ?.filter((b) => b.symbol !== 'USDT')
       .map((b) => `${b.symbol}USDT`);
 
-    const url = 'https://api.binance.com/api/v3/ticker/price';
-
     const promises = symbols.map(async (symbol) => {
       try {
         const response = await firstValueFrom(
           this.http
-            .get(url, {
+            .get(this.apiHost, {
               params: { symbol },
+              headers: {
+                'x-bc-key': this.appKey,
+              },
             })
             .pipe(
               map((response: AxiosResponse) => response.data), // Extract data from response
@@ -57,7 +66,30 @@ export class TokensController {
       }
     });
 
+    // const promises = symbols.map(async (symbol) => {
+    //   try {
+    //     const response = await firstValueFrom(
+    //       this.http
+    //         .get(url, {
+    //           params: { symbol },
+    //         })
+    //         .pipe(
+    //           map((response: AxiosResponse) => response.data), // Extract data from response
+    //           catchError((error: AxiosError) => {
+    //             console.error('Binance API Error:', error.message);
+    //             throw new Error(`Failed to fetch exchange rate for ${symbol}`);
+    //           }),
+    //         ),
+    //     );
+    //     return response;
+    //   } catch (error) {
+    //     console.error(error.message);
+    //     return null; // Handle individual symbol fetch failures gracefully
+    //   }
+    // });
+
     // Await all promises
+
     const results = await Promise.all(promises);
 
     // Filter out failed responses (nulls) if needed
