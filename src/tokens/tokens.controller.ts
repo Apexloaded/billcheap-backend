@@ -45,7 +45,7 @@ export class TokensController {
       try {
         const response = await firstValueFrom(
           this.http
-            .get(this.apiHost, {
+            .get(`${this.apiHost}/exhange`, {
               params: { symbol },
               headers: {
                 'x-bc-key': this.appKey,
