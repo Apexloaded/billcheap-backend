@@ -12,6 +12,7 @@ export class BillCheapListener implements OnModuleInit {
   private readonly logger = new Logger(BillCheapListener.name);
   private lastProcessedBlock: number;
   private deployedAtBlock: number;
+  private readonly MAX_BLOCK_RANGE = 50000;
 
   constructor(
     private readonly billCheapService: BillCheapService,
@@ -59,10 +60,8 @@ export class BillCheapListener implements OnModuleInit {
       }
 
       const fromBlock = this.lastProcessedBlock + 1;
-      const events = await this.billCheapService.getEvents(
-        fromBlock,
-        latestBlock,
-      );
+      let toBlock = Math.min(fromBlock + this.MAX_BLOCK_RANGE - 1, latestBlock);
+      const events = await this.billCheapService.getEvents(fromBlock, toBlock);
 
       for (const event of events) {
         this.logger.log('************Polling Event:************', event);
