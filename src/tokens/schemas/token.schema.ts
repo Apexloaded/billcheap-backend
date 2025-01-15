@@ -10,6 +10,9 @@ export class ListedToken {
 
   @Prop({ unique: true })
   address: string;
+  
+  @Prop()
+  aggregator: string;
 
   @Prop()
   name: string;

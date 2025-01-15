@@ -14,6 +14,8 @@ import { HttpService } from '@nestjs/axios';
 import { catchError, firstValueFrom, map, throwError } from 'rxjs';
 import { AxiosError, AxiosResponse } from 'axios';
 import { ConfigService } from '@nestjs/config';
+import { Public } from '@/decorators/public.decorator';
+import { BillCheapService } from '@/contracts/billcheap/billcheap.service';
 
 @Controller('tokens')
 export class TokensController {
@@ -24,6 +26,7 @@ export class TokensController {
     private readonly tokensService: TokensService,
     private http: HttpService,
     private readonly config: ConfigService,
+    private readonly billCheapService: BillCheapService,
   ) {
     this.apiHost = this.config.get('TG_APP_API');
     this.appKey = this.config.get('AppID');
@@ -34,76 +37,19 @@ export class TokensController {
     return this.tokensService.create(createTokenDto);
   }
 
+  @Public()
   @Get('exchange')
   async getExchangeRate() {
     const tokens = await this.tokensService.findAll();
-    const symbols = tokens
-      ?.filter((b) => b.symbol !== 'USDT')
-      .map((b) => `${b.symbol}USDT`);
+    const priceFeeds = await this.billCheapService.getPriceFeeds(tokens);
 
-    const promises = symbols.map(async (symbol) => {
-      try {
-        const response = await firstValueFrom(
-          this.http
-            .get(`${this.apiHost}/exhange`, {
-              params: { symbol },
-              headers: {
-                'x-bc-key': this.appKey,
-              },
-            })
-            .pipe(
-              map((response: AxiosResponse) => response.data), // Extract data from response
-              catchError((error: AxiosError) => {
-                console.error('Binance API Error:', error.message);
-                throw new Error(`Failed to fetch exchange rate for ${symbol}`);
-              }),
-            ),
-        );
-        return response;
-      } catch (error) {
-        console.error(error.message);
-        return null; // Handle individual symbol fetch failures gracefully
-      }
-    });
-
-    // const promises = symbols.map(async (symbol) => {
-    //   try {
-    //     const response = await firstValueFrom(
-    //       this.http
-    //         .get(url, {
-    //           params: { symbol },
-    //         })
-    //         .pipe(
-    //           map((response: AxiosResponse) => response.data), // Extract data from response
-    //           catchError((error: AxiosError) => {
-    //             console.error('Binance API Error:', error.message);
-    //             throw new Error(`Failed to fetch exchange rate for ${symbol}`);
-    //           }),
-    //         ),
-    //     );
-    //     return response;
-    //   } catch (error) {
-    //     console.error(error.message);
-    //     return null; // Handle individual symbol fetch failures gracefully
-    //   }
-    // });
-
-    // Await all promises
-
-    const results = await Promise.all(promises);
-
-    // Filter out failed responses (nulls) if needed
-    const validResults = results.filter((result) => result !== null);
-    const reducedResults = validResults.reduce((acc: any, res) => {
-      const { symbol, price } = res;
+    const feeds = priceFeeds.reduce((acc, feed) => {
+      const { price, symbol } = feed;
       acc[symbol] = parseFloat(price);
       return acc;
     }, {});
 
-    return {
-      ...reducedResults,
-      USDTUSDT: 1,
-    };
+    return feeds;
   }
   @Get()
   findAll() {

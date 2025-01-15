@@ -4,7 +4,8 @@ import { ethers, Contract } from 'ethers';
 import BillCheapAbi from './abi/billcheap.abi';
 import { ContractEvents } from '@/enums/contract.enum';
 import { ListedTokenDocument } from '@/tokens/schemas/token.schema';
-import { erc20Abi, formatEther, zeroAddress } from 'viem';
+import { erc20Abi, formatEther, zeroAddress, formatUnits } from 'viem';
+import AggregatorV3Abi from './abi/aggregatorV3.abi';
 
 export interface BlockchainEvent {
   name: string;
@@ -115,6 +116,27 @@ export class BillCheapService {
           };
         },
       ),
+    );
+  }
+  getPriceFeeds(tokens: ListedTokenDocument[]) {
+    return Promise.all(
+      tokens.map(async ({ address, aggregator, symbol, name }) => {
+        const contract = new Contract(
+          aggregator,
+          AggregatorV3Abi,
+          this.provider,
+        );
+        const priceFeeds = await contract.latestRoundData();
+        const decimal = await contract.decimals();
+        const price = formatUnits(priceFeeds[1], Number(decimal));
+        return {
+          address,
+          aggregator,
+          symbol,
+          name,
+          price,
+        };
+      }),
     );
   }
 }
