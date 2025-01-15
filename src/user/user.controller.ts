@@ -46,7 +46,7 @@ export class UserController {
       const tokens = await this.tokenService.queryBalance(
         user.wallet as `0x${string}`,
       );
-      return tokens;
+      return tokens.sort((a, b) => Number(b.balance) - Number(a.balance));
     } catch (error) {
       console.log(error);
     }
