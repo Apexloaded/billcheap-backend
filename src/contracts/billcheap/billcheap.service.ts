@@ -132,7 +132,7 @@ export class BillCheapService {
         return {
           address,
           aggregator,
-          symbol,
+          symbol: `${symbol}USDT`,
           name,
           price,
         };
