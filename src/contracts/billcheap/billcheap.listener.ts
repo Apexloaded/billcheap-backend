@@ -59,17 +59,29 @@ export class BillCheapListener implements OnModuleInit {
         return;
       }
 
-      const fromBlock = this.lastProcessedBlock + 1;
+      let fromBlock = this.lastProcessedBlock + 1;
       let toBlock = Math.min(fromBlock + this.MAX_BLOCK_RANGE - 1, latestBlock);
-      const events = await this.billCheapService.getEvents(fromBlock, toBlock);
 
-      for (const event of events) {
-        this.logger.log('************Polling Event:************', event);
-        await this.processEvent(event);
+      while (fromBlock <= latestBlock) {
+        this.logger.log(
+          `Fetching events from block ${fromBlock} to ${toBlock}`,
+        );
+        const events = await this.billCheapService.getEvents(
+          fromBlock,
+          toBlock,
+        );
+
+        for (const event of events) {
+          this.logger.log('************Polling Event:************', event);
+          await this.processEvent(event);
+        }
+
+        this.lastProcessedBlock = toBlock;
+        this.logger.log(`Processed events up to block ${toBlock}`);
+
+        fromBlock = toBlock + 1;
+        toBlock = Math.min(fromBlock + this.MAX_BLOCK_RANGE - 1, latestBlock);
       }
-
-      this.lastProcessedBlock = latestBlock;
-      this.logger.log(`Processed events up to block ${latestBlock}`);
     } catch (error) {
       this.logger.error('Error polling for events', error);
     }
