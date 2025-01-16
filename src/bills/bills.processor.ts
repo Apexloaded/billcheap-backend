@@ -56,6 +56,33 @@ export class BillsProcessor {
         }
         break;
       }
+      case BillType.MOBILE_DATA: {
+        try {
+          const airtimeRes =
+            await this.airtimeProcessor.processAirtime(unHashedBillId);
+
+          const [billsUpdate, txUpdate] = await Promise.all([
+            this.billsService.updateOne(
+              { _id: unHashedBillId },
+              {
+                status: airtimeRes.status,
+                billExternalId: airtimeRes.transaction.transactionId,
+              },
+            ),
+            this.txService.update(
+              { _id: unHashedTransactionId },
+              {
+                status: TxStatus.SUCCESSFUL,
+                onChainTxId: id,
+                senderAddress: from,
+              },
+            ),
+          ]);
+        } catch (error) {
+          this.logger.error('Error processing airtime bill', error);
+        }
+        break;
+      }
       default:
         this.logger.warn(`Unhandled event type: ${event.name}`);
     }

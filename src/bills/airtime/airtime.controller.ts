@@ -60,6 +60,8 @@ export class AirtimeController {
       throw new Error('Phone and ISO are required parameters.');
     }
 
+    console.log(phone, iso);
+    
     const url = this.reloadly.getUrl(
       AudienceType.Airtime,
       reloadlyPath.autoDetectProvider(phone, iso),

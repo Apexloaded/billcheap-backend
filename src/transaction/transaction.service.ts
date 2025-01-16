@@ -48,6 +48,10 @@ export class TransactionService {
                   case: { $eq: ['$bills.billType', 'AIRTIME'] },
                   then: { $arrayElemAt: ['$airtime', 0] },
                 },
+                {
+                  case: { $eq: ['$bills.billType', 'MOBILE_DATA'] },
+                  then: { $arrayElemAt: ['$airtime', 0] },
+                },
                 // {
                 //   case: { $eq: ['$bill_type', 'Data'] },
                 //   then: { $arrayElemAt: ['$data_bill', 0] },
