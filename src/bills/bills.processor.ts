@@ -25,8 +25,7 @@ export class BillsProcessor {
     const bill = await this.billsService.findOne({ _id: unHashedBillId });
     const transaction = this.txService.findOne({ _id: unHashedTransactionId });
 
-    if (!bill || !transaction)
-      throw new NotFoundException('Not found transaction');
+    if (!bill || !transaction) return;
 
     switch (bill.billType) {
       case BillType.AIRTIME: {
