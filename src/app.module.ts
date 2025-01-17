@@ -25,6 +25,7 @@ import contractConfig from './config/contract.config';
 import { ScheduleModule } from '@nestjs/schedule';
 import { TokensModule } from './tokens/tokens.module';
 import { HttpModule } from '@nestjs/axios';
+import { EventModule } from './event/event.module';
 
 @Module({
   imports: [
@@ -89,6 +90,7 @@ import { HttpModule } from '@nestjs/axios';
     TransactionModule,
     BillCheapModule,
     TokensModule,
+    EventModule,
   ],
   controllers: [AppController],
   providers: [

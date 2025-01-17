@@ -4,6 +4,7 @@ import { UpdateTransactionDto } from './dto/update-transaction.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Transaction } from './schema/transaction.schema';
 import { FilterQuery, Model } from 'mongoose';
+import { BillType } from '@/bills/schema/bill.schema';
 
 @Injectable()
 export class TransactionService {
@@ -14,10 +15,25 @@ export class TransactionService {
     return this.txModel.create(createTransactionDto);
   }
 
-  findAll(userId: string, page: number, pageSize: number) {
+  findAll(userId: string, wallet: string, page: number, pageSize: number) {
+    console.log(wallet);
     const skip = page * pageSize;
     return this.txModel.aggregate([
-      { $match: { $expr: { $eq: ['$userId', { $toObjectId: userId }] } } },
+      {
+        $match: {
+          $expr: {
+            $and: [
+              { $eq: ['$userId', { $toObjectId: userId }] },
+              {
+                $or: [
+                  { $eq: ['$senderAddress', wallet] },
+                  { $eq: ['$recipientAddress', wallet] },
+                ],
+              },
+            ],
+          },
+        },
+      },
       {
         $lookup: {
           from: 'bills',
@@ -26,7 +42,12 @@ export class TransactionService {
           as: 'bills',
         },
       },
-      { $unwind: '$bills' },
+      {
+        $unwind: {
+          path: '$bills',
+          preserveNullAndEmptyArrays: true, // Ensures transactions without bills are not excluded
+        },
+      },
       {
         $lookup: {
           from: 'airtimebills',
@@ -41,25 +62,17 @@ export class TransactionService {
           billType: '$bills.billType',
           billStatus: '$bills.status',
           reference: '$bills.reference',
-          metaData: {
+          billDetails: {
             $switch: {
               branches: [
                 {
-                  case: { $eq: ['$bills.billType', 'AIRTIME'] },
+                  case: { $eq: ['$bills.billType', BillType.AIRTIME] },
                   then: { $arrayElemAt: ['$airtime', 0] },
                 },
                 {
-                  case: { $eq: ['$bills.billType', 'MOBILE_DATA'] },
+                  case: { $eq: ['$bills.billType', BillType.MOBILE_DATA] },
                   then: { $arrayElemAt: ['$airtime', 0] },
                 },
-                // {
-                //   case: { $eq: ['$bill_type', 'Data'] },
-                //   then: { $arrayElemAt: ['$data_bill', 0] },
-                // },
-                // {
-                //   case: { $eq: ['$bill_type', 'Cable'] },
-                //   then: { $arrayElemAt: ['$cable_bill', 0] },
-                // },
               ],
               default: null,
             },

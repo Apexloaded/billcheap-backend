@@ -8,10 +8,10 @@ export class ListedToken {
   @Prop()
   token: string;
 
-  @Prop({ unique: true })
+  @Prop({ unique: true, lowercase: true })
   address: string;
-  
-  @Prop()
+
+  @Prop({ lowercase: true })
   aggregator: string;
 
   @Prop()

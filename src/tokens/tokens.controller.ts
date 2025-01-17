@@ -57,9 +57,7 @@ export class TokensController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.tokensService.findOne(+id);
-  }
+  findOne(@Param('id') id: string) {}
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateTokenDto: UpdateTokenDto) {

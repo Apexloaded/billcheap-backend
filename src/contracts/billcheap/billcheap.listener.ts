@@ -34,8 +34,6 @@ export class BillCheapListener implements OnModuleInit {
       .sort({ blockNumber: -1 })
       .exec();
 
-    console.log(lastProcessedEvent);
-
     this.lastProcessedBlock = lastProcessedEvent
       ? lastProcessedEvent.blockNumber
       : this.deployedAtBlock;

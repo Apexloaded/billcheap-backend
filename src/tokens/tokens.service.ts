@@ -3,7 +3,7 @@ import { CreateTokenDto } from './dto/create-token.dto';
 import { UpdateTokenDto } from './dto/update-token.dto';
 import { ListedToken } from './schemas/token.schema';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { FilterQuery, Model } from 'mongoose';
 import { BillCheapService } from '@/contracts/billcheap/billcheap.service';
 
 @Injectable()
@@ -20,8 +20,8 @@ export class TokensService {
     return this.model.find();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} token`;
+  findOne(filter: FilterQuery<ListedToken>) {
+    return this.model.findOne(filter);;
   }
 
   update(id: number, updateTokenDto: UpdateTokenDto) {

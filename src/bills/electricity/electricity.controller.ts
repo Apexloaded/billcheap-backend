@@ -6,6 +6,7 @@ import {
   Patch,
   Param,
   Delete,
+  Req,
 } from '@nestjs/common';
 import { ElectricityService } from './electricity.service';
 import { CreateElectricityDto } from './dto/create-electricity.dto';
@@ -26,13 +27,24 @@ export class ElectricityController {
   }
 
   @Get('billers')
-  findAll() {
+  findAll(@Req() req: Request) {
+    const authUser = req['user'];
+
     const url = this.reloadly.getUrl(
       AudienceType.Utilities,
       reloadlyPath.billers,
     );
-    console.log(url);
-    return this.reloadly.getApi(url, AudienceType.Utilities, {
+    const options = {
+      type: 'ELECTRICITY_BILL_PAYMENT',
+      countryISOCode: 'NG',
+    };
+
+    const queryParams = new URLSearchParams(
+      options as unknown as Record<string, string>,
+    ).toString();
+    const urlWithParams = `${url}?${queryParams}`;
+
+    return this.reloadly.getApi(urlWithParams, AudienceType.Utilities, {
       headers: { Accept: 'application/com.reloadly.topups-v1+json' },
     });
   }

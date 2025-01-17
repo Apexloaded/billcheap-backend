@@ -60,6 +60,9 @@ export class Transaction {
   @Prop()
   senderAddress: string; // To be updated when event is emitted from blockchain
 
+  @Prop()
+  recipientAddress: string; // To be updated when event is emitted from blockchain
+
   @Prop({ type: String, enum: TxType, required: true })
   type: TxType;
 

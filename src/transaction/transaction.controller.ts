@@ -23,13 +23,18 @@ export class TransactionController {
   }
 
   @Get('list')
-  findAll(
+  async findAll(
     @Req() req: Request,
     @Query('limit') limit: number = 50,
     @Query('page') page: number = 0,
   ) {
     const authUser = req['user'];
-    return this.transactionService.findAll(authUser.id, page, limit);
+    return await this.transactionService.findAll(
+      authUser.id,
+      authUser.wallet,
+      page,
+      limit,
+    );
   }
 
   @Get(':id')
