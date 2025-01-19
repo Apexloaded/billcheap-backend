@@ -5,4 +5,5 @@ export default () => ({
   BC_CONTRACT: process.env.BC_CONTRACT,
   ADMIN_WALLET: process.env.ADMIN_WALLET,
   ADMIN_PRIVATE: process.env.ADMIN_PRIVATE,
+  DEPLOYED_AT_BLOCK: parseInt(process.env.DEPLOYED_AT),
 });

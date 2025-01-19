@@ -52,7 +52,7 @@ export class Transaction {
   amountInUsd: number;
 
   @Prop() // To be updated when event is emitted from blockchain
-  amountInWei: bigint;
+  amountInWei: number;
 
   @Prop()
   onChainTxId: string; // To be updated when event is emitted from blockchain

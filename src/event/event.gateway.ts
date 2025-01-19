@@ -57,7 +57,7 @@ export class EventGateway {
           hash: body.transactionHash,
           userId: body.user,
           amount: parseFloat(body.value),
-          amountInWei: parseEther(body.value),
+          amountInWei: parseInt(parseEther(body.value).toString()),
           type: TxType.TRANSFER,
           paymentMethod: PaymentMethods.CRYPTO,
           tokenAddress: body.token,

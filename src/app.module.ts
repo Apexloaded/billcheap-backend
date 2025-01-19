@@ -26,6 +26,8 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { TokensModule } from './tokens/tokens.module';
 import { HttpModule } from '@nestjs/axios';
 import { EventModule } from './event/event.module';
+import { BullModule } from '@nestjs/bullmq';
+import { Erc20Module } from './contracts/erc20/erc20.module';
 
 @Module({
   imports: [
@@ -40,6 +42,19 @@ import { EventModule } from './event/event.module';
       envFilePath: ['.env.local'],
       isGlobal: true,
       load: [appConfig, telegramConfig, authConfig, contractConfig],
+    }),
+    BullModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: (configService: ConfigService) => ({
+        connection: {
+          host: configService.get<string>('REDIS_HOST'),
+          port: parseInt(configService.get<string>('REDIS_PORT')),
+          url: configService.get<string>('REDIS_URL'),
+          password: configService.get<string>('REDIS_PASSWORD'),
+          username: configService.get<string>('REDIS_USERNAME'),
+        },
+      }),
+      inject: [ConfigService],
     }),
     TelegrafModule.forRootAsync({
       imports: [ConfigModule],
@@ -89,6 +104,7 @@ import { EventModule } from './event/event.module';
     BillsModule,
     TransactionModule,
     BillCheapModule,
+    Erc20Module,
     TokensModule,
     EventModule,
   ],

@@ -44,14 +44,14 @@ export class BillCheapListener implements OnModuleInit {
   }
 
   private subscribeToRealTimeEvents() {
-    this.billCheapService.subscribeToEvents(async (event: BlockchainEvent) => {
-      this.logger.log('************Subscribed Events:************', event);
-      await this.processEvent(event);
-    });
+    // this.billCheapService.subscribeToEvents(async (event: BlockchainEvent) => {
+    //   this.logger.log('************Subscribed Events:************', event);
+    //   await this.processEvent(event);
+    // });
   }
 
-  @Cron(CronExpression.EVERY_10_SECONDS)
-  async pollForEvents() {
+  //@Cron(CronExpression.EVERY_10_SECONDS)
+  async findContractEvents() {
     try {
       this.logger.log('Polling for new events...');
       const latestBlock = await this.billCheapService.getLatestBlockNumber();
@@ -61,6 +61,7 @@ export class BillCheapListener implements OnModuleInit {
 
       let fromBlock = this.lastProcessedBlock + 1;
       let toBlock = Math.min(fromBlock + this.MAX_BLOCK_RANGE - 1, latestBlock);
+      console.log(fromBlock, toBlock);
 
       while (fromBlock <= latestBlock) {
         this.logger.log(

@@ -12,4 +12,5 @@ export enum ContractTxType {
 
 export enum ContractEvents {
   BillProcessed = 'BillProcessed',
+  Transfer = 'Transfer',
 }
