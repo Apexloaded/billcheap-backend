@@ -8,6 +8,11 @@ export class AppController {
 
   @Public()
   @Get()
+  getWelcome(): string {
+    return this.appService.getWelcome();
+  }
+  @Public()
+  @Get('hello')
   getHello(): string {
     return this.appService.getHello();
   }
