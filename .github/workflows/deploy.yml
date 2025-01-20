@@ -52,11 +52,11 @@ jobs:
           ssh ${{ secrets.SERVER_USER }}@${{ secrets.HOST_SERVER }} "
             set -e
             cd ${{ secrets.DEPLOY_PATH }}
-            pm2 stop api.bill.cheap || true
+            pm2 stop $API_BILL_CHEAP || true
             rm -rf dist_backup
             mv dist dist_backup
             tar -xzf app.tar.gz
-            pm2 start api.bill.cheap || pm2 restart api.bill.cheap
+            pm2 start $API_BILL_CHEAP || pm2 restart $API_BILL_CHEAP
             rm -rf app.tar.gz
           "
 
