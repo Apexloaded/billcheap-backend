@@ -22,8 +22,8 @@ jobs:
 
       - name: Build and zip app
         run: |
-          npm ci
-          npm run build
+          pnpm i
+          pnpm run build
           tar -czf app.tar.gz ./dist
 
       - name: Upload artifact to server
