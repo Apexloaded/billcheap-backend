@@ -1,0 +1,42 @@
+name: Deploy to DigitalOcean
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.DEPLOY_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H ${{ secrets.HOST_SERVER }} >> ~/.ssh/known_hosts
+
+      - name: Build and zip app
+        run: |
+          npm ci
+          npm run build
+          tar -czf app.tar.gz ./dist
+
+      - name: Upload artifact to server
+        run: |
+          scp app.tar.gz ${{ secrets.SERVER_USER }}@${{ secrets.HOST_SERVER }}:${{ secrets.DEPLOY_PATH }}
+
+      - name: Deploy on server
+        env:
+          API_BILL_CHEAP: ${{ secrets.API_BILL_CHEAP }}  # Set the secret as an environment variable
+        run: |
+          ssh ${{ secrets.SERVER_USER }}@${{ secrets.HOST_SERVER }} "
+            set -e;
+            cd ${{ secrets.DEPLOY_PATH }} &&
+            tar -xzf app.tar.gz &&
+            pm2 restart $API_BILL_CHEAP
+          "
