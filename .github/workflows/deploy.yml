@@ -56,7 +56,7 @@ jobs:
             rm -rf dist_backup
             mv dist dist_backup
             tar -xzf app.tar.gz
-            pm2 start $API_BILL_CHEAP || pm2 restart $API_BILL_CHEAP
+            pm2 restart $API_BILL_CHEAP
             rm -rf app.tar.gz
           "
 
