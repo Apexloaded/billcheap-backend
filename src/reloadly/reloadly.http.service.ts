@@ -23,13 +23,7 @@ export class ReloadlyHttpService {
     data?: ReloadlyAuthRequest,
     config?: AxiosRequestConfig,
   ): Observable<AxiosResponse<any>> {
-    return this.httpService.post(`${this.apiUrl}/auth`, data, {
-      headers: {
-        ...config.headers,
-        'x-audience-url': url,
-        'x-bc-key': this.appKey,
-      },
-    });
+    return this.httpService.post(url, data);
   }
 
   post<T>(
@@ -39,7 +33,7 @@ export class ReloadlyHttpService {
     config?: AxiosRequestConfig,
   ): Observable<AxiosResponse<any>> {
     config = this.addAuthHeader(url, accessToken);
-    return this.httpService.post(this.apiUrl, data, config);
+    return this.httpService.post(url, data, config);
   }
 
   get(
@@ -48,7 +42,7 @@ export class ReloadlyHttpService {
     config?: AxiosRequestConfig,
   ): Observable<AxiosResponse<any>> {
     config = this.addAuthHeader(url, accessToken);
-    return this.httpService.get(this.apiUrl, config);
+    return this.httpService.get(url, config);
   }
 
   private addAuthHeader(
@@ -57,11 +51,9 @@ export class ReloadlyHttpService {
   ): AxiosRequestConfig {
     return {
       headers: {
-        'x-audience-url': url,
-        'x-reloadly-access-token': accessToken,
-        'x-bc-key': this.appKey,
-        'Content-Type': 'application/json',
+        Authorization: `Bearer ${accessToken}`,
         Accept: 'application/json',
+        'Content-Type': 'application/json',
       },
     };
   }
