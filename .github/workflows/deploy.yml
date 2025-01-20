@@ -13,6 +13,19 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 10
+
+      - name: Cache pnpm modules
+        uses: actions/cache@v3
+        with:
+          path: ~/.pnpm-store
+          key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-
+
       - name: Set up SSH
         run: |
           mkdir -p ~/.ssh
@@ -20,10 +33,14 @@ jobs:
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -H ${{ secrets.HOST_SERVER }} >> ~/.ssh/known_hosts
 
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Run tests
+        run: pnpm test
+
       - name: Build and zip app
         run: |
-          npm install -g pnpm@latest-10
-          pnpm i
           pnpm run build
           tar -czf app.tar.gz ./dist
 
@@ -33,11 +50,23 @@ jobs:
 
       - name: Deploy on server
         env:
-          API_BILL_CHEAP: ${{ secrets.API_BILL_CHEAP }}  # Set the secret as an environment variable
+          API_BILL_CHEAP: ${{ secrets.API_BILL_CHEAP }}
         run: |
           ssh ${{ secrets.SERVER_USER }}@${{ secrets.HOST_SERVER }} "
             set -e;
             cd ${{ secrets.DEPLOY_PATH }} &&
             tar -xzf app.tar.gz &&
-            pm2 restart $API_BILL_CHEAP
+            mv dist new_dist &&
+            pm2 stop $API_BILL_CHEAP || true &&
+            rm -rf old_dist &&
+            mv current_dist old_dist || true &&
+            mv new_dist current_dist &&
+            pm2 start $API_BILL_CHEAP || pm2 restart $API_BILL_CHEAP &&
+            rm -rf app.tar.gz old_dist
+          "
+
+      - name: Verify Deployment
+        run: |
+          ssh ${{ secrets.SERVER_USER }}@${{ secrets.HOST_SERVER }} "
+            pm2 list | grep $API_BILL_CHEAP
           "
