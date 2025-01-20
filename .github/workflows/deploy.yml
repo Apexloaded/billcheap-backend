@@ -61,6 +61,8 @@ jobs:
           "
 
       - name: Verify Deployment
+        env:
+          API_BILL_CHEAP: ${{ secrets.API_BILL_CHEAP }}
         run: |
           ssh ${{ secrets.SERVER_USER }}@${{ secrets.HOST_SERVER }} "
             pm2 list | grep $API_BILL_CHEAP
