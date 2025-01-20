@@ -22,6 +22,7 @@ jobs:
 
       - name: Build and zip app
         run: |
+          npm install -g pnpm@latest-10
           pnpm i
           pnpm run build
           tar -czf app.tar.gz ./dist
