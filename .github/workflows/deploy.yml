@@ -50,18 +50,13 @@ jobs:
           API_BILL_CHEAP: ${{ secrets.API_BILL_CHEAP }}
         run: |
           ssh ${{ secrets.SERVER_USER }}@${{ secrets.HOST_SERVER }} "
-            set -e;
-            # Ensure pm2 is installed on the server
-            if ! command -v pm2 &> /dev/null; then
-              echo 'pm2 not found, installing...'
-              npm install -g pm2
-            fi
+            set -e
             cd ${{ secrets.DEPLOY_PATH }}
-            pm2 stop $API_BILL_CHEAP || true
+            pm2 stop api.bill.cheap || true
             rm -rf dist_backup
             mv dist dist_backup
             tar -xzf app.tar.gz
-            pm2 start $API_BILL_CHEAP || pm2 restart $API_BILL_CHEAP
+            pm2 start api.bill.cheap || pm2 restart api.bill.cheap
             rm -rf app.tar.gz
           "
 
